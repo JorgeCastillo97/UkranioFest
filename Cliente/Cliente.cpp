@@ -18,6 +18,7 @@ using namespace std;
 static const char *s_http_port = "8000";
 static struct mg_serve_http_opts s_http_server_opts;
 void servidorWeb(void);
+void cliente(char *ip, char *port, char *registros);
 
 // buffer a enviar
 char *buf = (char*)malloc(TAM_MAX_DATA);
@@ -69,14 +70,32 @@ static void handle_upload(struct mg_connection *nc, int ev, void *p) {
                 "Connection: close\r\n\r\n"
                 "Written %ld of POST data to a temp file\n\n",
                 (long) ftell(data->fp));
+		
+
+      	// Calcular tamano
+      	int chunksize = 512;
+      	fseek(data->fp, 0L, SEEK_END);
+	  	int tam = ftell(data->fp);
+	  	int numPartes = tam/chunksize;
+	  	int tamLast = (ftell(data->fp)) - (((int)ftell(data->fp)/chunksize) * chunksize);
+
+	  	// cout << "tamano: " << tam << endl;
+	  	// cout << "Partes:"  << numPartes << endl;
+	  	// cout << "tamlast" << tamLast << endl;
+
+	  	if( tam > 0 && tam < chunksize )
+	  		numPartes = 1;
+
 		int c;
-	  	
 	  	fseek(data->fp, 0, SEEK_SET);
 	  	memset( buf, 0, sizeof( TAM_MAX_DATA ) );
-	  	while ((c = fread(buf, 1, TAM_MAX_DATA, data->fp)) > 0) {
-			printf("buf: %s\n", buf);
-			enviar = 1;
-		}
+	  	for( int i = 0; i < numPartes; i++ )
+		  	while ((c = fread(buf, 1, chunksize, data->fp)) > 0) {
+				printf("buf: %s\n", buf);
+				enviar = 1;
+			}
+
+
       nc->flags |= MG_F_SEND_AND_CLOSE;
 
       /*Leer el archivo*/
@@ -94,10 +113,11 @@ static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
   }
 }
 
-int main(void) {
+int main( int argc, char * argv[] ) {
 
+	thread th1( cliente, argv[1], argv[2], argv[3] );
 	thread th2(servidorWeb);
-	// th1.join();
+	th1.join();
 	usleep(3000000);
 	cout << "Servidor web corriendo..." << endl;
 	th2.join();
@@ -107,28 +127,15 @@ int main(void) {
 
 void cliente(char *ip, char *port, char *registros){
 
-	while(1) { 
-
+	while(1) {
+		struct timeval timeout;
+		timeout.tv_sec = 2;
+		timeout.tv_usec = 500000;
+		// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
+		Solicitud cliente = Solicitud(timeout);
+		cliente.doOperation(ip, atoi(port), 1, buf);
+		enviar = 0;
 	} // end while
-	struct timeval timeout;
-	timeout.tv_sec = 2;
-	timeout.tv_usec = 500000;
-
-	string auxIp = ip, auxRegistros = registros;
-	char arreglo[100]="";
-	char *ipServer, *reg;
-	int puerto;
-	int operacion = 1;
-	ipServer = const_cast<char *>(auxIp.c_str());
-	puerto = atoi(port);
-	reg = const_cast<char *>(auxRegistros.c_str());
-	cout << ipServer << endl << puerto << endl << reg << endl;
-
-	memcpy(arreglo, reg, sizeof(strlen(reg) + 1));
-
-	// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
-	Solicitud cliente = Solicitud(timeout);
-	cliente.doOperation("10.100.73.101", puerto, operacion, arreglo);
 }
 
 
@@ -143,7 +150,7 @@ void servidorWeb(void) {
 	exit(EXIT_FAILURE);
 	}
 
-	s_http_server_opts.document_root = ".";  // Serve current directory
+	s_http_server_opts.document_root = "www";  // Serve current directory
 	mg_register_http_endpoint(c, "/upload", handle_upload MG_UD_ARG(NULL));
 
 	// Set up HTTP server parameters

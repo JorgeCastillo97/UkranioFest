@@ -9,61 +9,21 @@ Solicitud::Solicitud(struct timeval timeout) {
 
 char * Solicitud::doOperation(char* IP, int puerto, int operationId, char* arguments) {
 	struct mensaje msj;
-	char aux[100];
-	char* resultado;
-	int res;
-	unsigned int id, registros = atoi(arguments); // id de 0 a 65535
-	cout << "Registros " << registros << endl;
-	FILE *f = fopen("votos.txt", "r+");
-	if (f==NULL) {
-		cout << "Error al abrir el archivo votos.txt" << endl;
-		exit(-1);
-	}
-	id = 0;
-	for(int i=0;i<registros;i++){
-		msj.messageType = 0;
-		msj.requestId = id;
-		//id++;
-		memcpy(msj.IP, IP, 16);
-		msj.puerto = puerto;
-		msj.operationId = operationId;
-		//cout << "Id operacion: " << msj.operationId << endl;
-		//cout << "ip: " << msj.IP << endl;
-		fgets(msj.arguments, 100, f);
-		cout << msj.arguments;
-		//memcpy(msj.arguments, arguments, 4000);
-		//cout << "puerto: " << msj.puerto << endl;
-		//cout << "argumentos: " << msj.arguments << endl;
-		PaqueteDatagrama paq((char*) &msj, sizeof(msj), IP, puerto);
-		socketlocal->envia(paq);
-		PaqueteDatagrama paq1(sizeof(msj));
-		res = socketlocal->recibeTimeout(paq1,timeoutSocket.tv_sec,timeoutSocket.tv_usec);
-		if(res>=0){
-			resultado  = paq1.obtieneDatos();
-			cout << "resultado: " << resultado << endl;
-			id++;
-		} else {
-			cout << "No se pudo conectar al servidor :(, reenviado paquete..." << endl;
-			while (1) {
-				PaqueteDatagrama paqReenvio((char*)&msj, sizeof(msj), IP, puerto);
-				socketlocal->envia(paqReenvio);
-				PaqueteDatagrama acuse(sizeof(msj));
-				res = socketlocal->recibeTimeout(acuse,timeoutSocket.tv_sec,timeoutSocket.tv_usec);
-				if(res >0 ){
-					cout << "resultado: " << acuse.obtieneDatos() << endl;
-					break;
-				}
-			}
-			id++;
-		}
-		//cout<<"Resultado: " <<res <<endl;
-		/*if(res>=0){
-			resultado = paq1.obtieneDatos();
-			break;
-		}*/
-	}
-	fclose(f);
+	int id;// registros = atoi(arguments); // id de 0 a 65535
+
+	msj.messageType = 1;
+	msj.requestId = 10;
+	memcpy(msj.IP, IP, 16);
+	msj.puerto = puerto;
+	msj.operationId = operationId;
+	memset( msj.arguments, 0, sizeof(msj) );
+	memcpy( msj.arguments, arguments, 512 );
+	PaqueteDatagrama paq((char*) &msj, sizeof(msj), IP, puerto);
+	socketlocal->envia(paq);
+	PaqueteDatagrama paq1(sizeof(msj));
+	int res = socketlocal->recibeTimeout(paq1,timeoutSocket.tv_sec,timeoutSocket.tv_usec);
 
 
-	return resultado;
+
+	return "WAA";
 }
