@@ -70,8 +70,8 @@ int main(int argc, char *argv[]){
 	char* s2Ip = argv[3];
 	int s2Port = atoi(argv[4]);
     
-   // char* s3Ip = argv[5];
-	//int s3Port = atoi(argv[6]);
+   char* s3Ip = argv[5];
+int s3Port = atoi(argv[6]);
     //string ips [2];
     //ips[0]=string(s1Ip);
     //ips[1]=string(s2Ip); 
@@ -118,21 +118,20 @@ int main(int argc, char *argv[]){
 			//enviar(s2Ip, s2Port, r, s);
 			thread t2(enviar, s2Ip, s2Port, aux, s, 1);
 		//	t2.detach();
-		//}
-        t1.join();
-        t2.join();
-       /* auxindi =buscaindice(indice , sp, toma);
+	
+       auxindi =buscaindice(indice , sp, toma);
        // cout << "auxindi " <<  auxindi <<endl;
         aux =sp.substr(indice, auxindi);
           //  cout << aux << endl; 
         indice=indice+auxindi;
-         if(conectado() )
-		{
+        
 			//enviar(s2Ip, s2Port, r, s);
-			thread t(enviar, s3Ip, s3Port, aux, s, 2);
-			t.detach();
-		}
-	*/
+			thread t3(enviar, s3Ip, s3Port, aux, s, 2);
+		
+        t1.join();
+        t2.join();
+        t3.join();
+	
 		usleep(200000);
 	
 	}
