@@ -18,34 +18,27 @@ vector<string> obtenerPalabras(set<string> &diccionario, set<unsigned char> &abe
 int contar(set<string> &diccionario, vector<string> &palabras);
 
 int main(int argc, char *argv[]) {
-    long long int existen, noExisten, nbd;
+    int existen, noExisten, nbd;
 	set<string> diccionario;
     set<unsigned char> abecedario;
 
     cargarDiccicionario(diccionario);    // Inicializar diccionario
     cargarAbecedario(abecedario);        // Inicializar abecedario
     
-    // // Recibir solicitud
-    // Respuesta resp(atoi(argv[1]));
-    // //Respuesta resp(7200);
-    // while (true) {
-    //     struct mensaje *msj = resp.getRequest();
-    //     if(msj != NULL) {
-    //         int size = msj->operationId;
-    //         char datos[MAX];
-    //         memcpy(datos, msj->arguments, sizeof(char)*size);
-    //         string frase = "";
-    //         for(int i = 0; i < size; i++) {
-    //             unsigned char auxChar = datos[i];
-    //             //printf("char: %d\n", auxChar);
-    //             frase += auxChar;
-    //         }
-            std::ifstream file("libro.txt");
-            std::string str;
+    // Recibir solicitud
+    Respuesta resp(atoi(argv[1]));
+    //Respuesta resp(7200);
+    while (true) {
+        struct mensaje *msj = resp.getRequest();
+        if(msj != NULL) {
+            int size = msj->operationId;
+            char datos[MAX];
+            memcpy(datos, msj->arguments, sizeof(char)*size);
             string frase = "";
-            while (std::getline(file, str)) {
-                //std::cout << str << "\n";
-                frase += str;
+            for(int i = 0; i < size; i++) {
+                unsigned char auxChar = datos[i];
+                //printf("char: %d\n", auxChar);
+                frase += auxChar;
             }
             //cout << "Recibi frase: " << frase << endl;
             // Obtener palabras
@@ -54,17 +47,17 @@ int main(int argc, char *argv[]) {
 
             // Contar palabras que existen en el diccionario
             existen = contar(diccionario, palabras);
-            noExisten = palabras.size() - existen;
+            noExisten = tamDiccionario - existen;
 
-            cout << "Existen: " << existen << endl;
-            cout << "No existen: " << noExisten << endl;
-            cout << "Palabras leidas: " << palabras.size() << endl;
-    //         int palabrasContadas[2];
-    //         palabrasContadas[0] = existen;
-    //         palabrasContadas[1] = palabras.size();
-    //         resp.sendReply((char *) palabrasContadas);
-    //     }
-    // }
+            // cout << "Existen: " << existen << endl;
+            // cout << "No existen: " << noExisten << endl;
+            // cout << "Palabras leidas: " << palabras.size() << endl;
+            int palabrasContadas[2];
+            palabrasContadas[0] = existen;
+            palabrasContadas[1] = palabras.size();
+            resp.sendReply((char *) palabrasContadas);
+        }
+    }
     // Recibir palabra
     //string frase = "La última pregunta es la más embarazosa, pues la única respuesta que puedo dar es ésta: «Tal vez. Eso lo verá usted leyendo la novela.» ¿Pero y si, después de leerla, el lector no ve en mi héroe nada de particular? Digo esto porque preveo que puede ocurrir así. A mis ojos, el personaje es notable, pero no tengo ninguna confianza en convencer de ello al lector. Es un hombre que procede con seguridad, pero de un modo vago y oscuro. Sin embargo, resultaría sorprendente, en nuestra época, pedir a las personas claridad. De lo que no hay duda es de que es un ser extraño, incluso original. Pero estas características, lejos de conferir el derecho de atraer la atención, representan un perjuicio, especialmente cuando todo el mundo se esfuerza en coordinar las individualidades y extraer un sentido general del absurdo colectivo. El hombre original es, en la mayoría de los casos, un individuo que se aísla de los demás. ¿No es cierto?";
     //cout << "string size: " << frase.size() << endl;
