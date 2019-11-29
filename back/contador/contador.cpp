@@ -25,8 +25,8 @@ int main() {
     cargarAbecedario(abecedario);        // Inicializar abecedario
     
     // Recibir solicitud
-    //Respuesta resp(atoi(argv[1]));
-    Respuesta resp(7200);
+    Respuesta resp(atoi(argv[1]));
+    //Respuesta resp(7200);
     while (true) {
         struct mensaje *msj = resp.getRequest();
         if(msj != NULL) {
