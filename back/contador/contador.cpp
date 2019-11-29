@@ -49,9 +49,9 @@ int main(int argc, char *argv[]) {
             existen = contar(diccionario, palabras);
             noExisten = tamDiccionario - existen;
 
-            // cout << "Existen: " << existen << endl;
+            cout << "Existen: " << existen << endl;
             // cout << "No existen: " << noExisten << endl;
-            // cout << "Palabras leidas: " << palabras.size() << endl;
+            cout << "Palabras leidas: " << palabras.size() << endl;
             int palabrasContadas[2];
             palabrasContadas[0] = existen;
             palabrasContadas[1] = palabras.size();
