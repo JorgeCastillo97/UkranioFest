@@ -7,7 +7,6 @@
 #include <thread>  
 #define MAX 20000
 #define tamDiccionario 10000
-#define tamFrase 31
 using namespace std;
 
 void cargarDiccicionario(set<string> &diccionario);        // Cargar archivo de palabras
@@ -37,10 +36,11 @@ int main(int argc, char *argv[]) {
             string frase = "";
             for(int i = 0; i < size; i++) {
                 unsigned char auxChar = datos[i];
-                //printf("char: %d\n", auxChar);
+                //printf("char: %d\n", datos[i]);
                 frase += auxChar;
+                //frase += datos[i];
             }
-            cout << "Recibi frase: " << frase.size() << endl;
+            //cout << "Recibi frase: " << frase << endl;
             // Obtener palabras
             vector<string> palabras;
             palabras = obtenerPalabras(diccionario, abecedario, frase);
@@ -49,9 +49,9 @@ int main(int argc, char *argv[]) {
             existen = contar(diccionario, palabras);
             noExisten = tamDiccionario - existen;
 
-            cout << "Existen: " << existen << endl;
-            // cout << "No existen: " << noExisten << endl;
-            cout << "Palabras leidas: " << palabras.size() << endl;
+            //cout << "Existen: " << existen << endl;
+            //cout << "No existen: " << noExisten << endl;
+            //cout << "Palabras leidas: " << palabras.size() << endl;
             int palabrasContadas[2];
             palabrasContadas[0] = existen;
             palabrasContadas[1] = palabras.size();
@@ -123,13 +123,18 @@ vector<string> obtenerPalabras(set<string> &diccionario, set<unsigned char> &abe
             palabra += c;
         }
         else { // Ya tengo una palabra
-            if(palabra.size() > 0) palabras.push_back(palabra);
+            if(palabra.size() > 0) {
+                palabras.push_back(palabra);
+                //cout << "palabra es: " << palabra << endl;
+            }
             palabra = "";              // Limpiar la variable de palabra 
         }
     }
     // Verificar si hay una palabra:
-    if(palabra.size() > 0) palabras.push_back(palabra);
-
+    if(palabra.size() > 0) {
+        //cout << "palabra es: " << palabra << endl;
+        palabras.push_back(palabra);
+    }
     return palabras;
 }
 
