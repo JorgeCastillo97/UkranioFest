@@ -1,3 +1,4 @@
+#include<bits/stdc++.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,12 +16,9 @@ int h2n1g=0;
 int h3ng=0;
 int h3n1g=0;
 
-
-
-
-void enviar(char* ip, int puerto,  string ca, Solicitud s, int hilo){
+void enviar(char* ip, int puerto,  string ca, Solicitud s, int hilo) {
 	int res [2];
-    int na=ca.length();
+    int na = ca.length();
      char char_array[ca.length() + 1]; 
   
     // copying the contents of the 
@@ -30,42 +28,31 @@ void enviar(char* ip, int puerto,  string ca, Solicitud s, int hilo){
 	if(res[0]==-1)
     "un servicio no disponible";
     //cout <<"el mensaje" << res[1] <<endl;
-    if(hilo==0)
-    {
+    if(hilo==0) {
         h1ng=h1ng + res[0];
         h1n1g=h1n1g+res[1];
     }
-    else if(hilo==1)
-    {
+    else if(hilo==1) {
         h2ng=h2ng + res[0];
         h2n1g=h2n1g+res[1];
     }
-    else if(hilo==2)
-    {
+    else if(hilo==2) {
         h3ng=h3ng + res[0];
         h3n1g=h3n1g+res[1];
     }
-    
-    
 }
-int  buscaindice(int indice, string cadena, int  salto )
-{
+int  buscaindice(int indice, string cadena, int  salto ) {
     int indiceFinal =indice;
-    for(int i=indice ;i <cadena.length() ; i++ )
-    {
+    for(int i=indice ;i <cadena.length() ; i++ ) {
         //cout << "caracter " << cadena[i] << endl;
         //cout << "i  " << i-indice << endl;
-        if((i-indice)>=salto &  cadena[i]== ' '  ) 
-        {
+        if((i-indice)>=salto &  cadena[i]== ' '  ) {
             return (i-indice);
         }
     }
-
     return (cadena.length()-indice) ;
 } 
-bool conectado()
-{
-    
+bool conectado() {
     return true;
 }
 int main(int argc, char *argv[]){
@@ -87,9 +74,16 @@ int main(int argc, char *argv[]){
     //ips[0]=string(s1Ip);
     //ips[1]=string(s2Ip); 
 	int cont = 0;
-	Solicitud s; 
-    string sp ="hola como estas quiero preguntarte algo  de la perorata, es que tuve una  analepsis fue por eso que deci contarte a lo wey ";
-   //string sp="cómo                         ";
+	std::ifstream file("libro.txt");
+    std::string str;
+    string sp = "";
+    while (std::getline(file, str)) {
+        //std::cout << str << "\n";
+        sp += str;
+    }
+   
+    Solicitud s; 
+    //string sp="cómo                         ";
     cout<< sp.length()<<endl;
     int indice=0;
     int toma= 10;
