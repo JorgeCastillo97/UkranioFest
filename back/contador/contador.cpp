@@ -16,7 +16,7 @@ void convertirAMinusculaAcento(unsigned char &c);               // Convertir a m
 vector<string> obtenerPalabras(set<string> &diccionario, set<unsigned char> &abecedario, string &frase);
 int contar(set<string> &diccionario, vector<string> &palabras);
 
-int main() {
+int main(int argc, char *argv[]) {
     int existen, noExisten, nbd;
 	set<string> diccionario;
     set<unsigned char> abecedario;
