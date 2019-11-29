@@ -29,7 +29,7 @@ void enviar(char* ip, int puerto,  string ca, Solicitud s, int hilo){
 	memcpy(&res, s.doOperation(ip, puerto, na,char_array, na ),8);
 	if(res[0]==-1)
     "un servicio no disponible";
-    cout <<"el mensaje" << res[1] <<endl;
+    //cout <<"el mensaje" << res[1] <<endl;
     if(hilo==0)
     {
         h1ng=h1ng + res[0];
@@ -132,17 +132,17 @@ int main(int argc, char *argv[]){
 			t.detach();
 		}
 	
-		usleep(3000000);
+		usleep(3500000);
 	
 	}
     usleep(100000);
 	//cout << cont << endl;
-	cout <<"la global" << h1ng<<endl;
-    cout <<"la global" << h1n1g<<endl;
-    cout <<"la global" << h2ng<<endl;
-    cout <<"la global" << h2n1g<<endl;
-    cout <<"la global" << h3ng<<endl;
-    cout <<"la global" << h3n1g<<endl;
+	cout <<"la global " << h1ng<<endl;
+    cout <<"la global " << h1n1g<<endl;
+    cout <<"la global " << h2ng<<endl;
+    cout <<"la global " << h2n1g<<endl;
+    cout <<"la global " << h3ng<<endl;
+    cout <<"la global " << h3n1g<<endl;
     return 0;
     
 }
