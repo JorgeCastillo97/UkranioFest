@@ -5,6 +5,7 @@
 #include <iostream> 
 #include "Respuesta.h"
 #include <thread>  
+#define MAX 20000
 #define tamDiccionario 10000
 #define tamFrase 31
 using namespace std;
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]) {
         struct mensaje *msj = resp.getRequest();
         if(msj != NULL) {
             int size = msj->operationId;
-            char datos[1000];
+            char datos[MAX];
             memcpy(datos, msj->arguments, sizeof(char)*size);
             string frase = "";
             for(int i = 0; i < size; i++) {
