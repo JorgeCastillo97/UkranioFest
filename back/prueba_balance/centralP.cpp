@@ -9,12 +9,13 @@
 //#include <list> 
 #include <thread>  
 using namespace std;
-int h1ng=0;
-int h1n1g=0;
-int h2ng=0;
-int h2n1g=0;
-int h3ng=0;
-int h3n1g=0;
+typedef long long int lli;
+lli h1ng=0;
+lli  h1n1g=0;
+lli  h2ng=0;
+lli h2n1g=0;
+lli h3ng=0;
+lli h3n1g=0;
 
 void enviar(char* ip, int puerto,  string ca, Solicitud s, int hilo) {
 	int res [2];
@@ -24,6 +25,7 @@ void enviar(char* ip, int puerto,  string ca, Solicitud s, int hilo) {
     // copying the contents of the 
     // string to char array 
     strcpy(char_array, ca.c_str()); 
+    //cout<< <<endl;
 	memcpy(&res, s.doOperation(ip, puerto, na,char_array, na ),8);
 	if(res[0]==-1)
     "un servicio no disponible";
@@ -43,11 +45,11 @@ void enviar(char* ip, int puerto,  string ca, Solicitud s, int hilo) {
 }
 int  buscaindice(int indice, string cadena, int  salto ) {
     int indiceFinal =indice;
-    for(int i=indice ;i <cadena.length() ; i++ ) {
+    for(int i=indice ;i <cadena.length()-1 ; i++ ) {
         //cout << "caracter " << cadena[i] << endl;
         //cout << "i  " << i-indice << endl;
         if((i-indice)>=salto &  cadena[i]== ' '  ) {
-            return (i-indice);
+            return (i-indice-1);
         }
     }
     return (cadena.length()-indice) ;
@@ -68,8 +70,8 @@ int main(int argc, char *argv[]){
 	char* s2Ip = argv[3];
 	int s2Port = atoi(argv[4]);
     
-    char* s3Ip = argv[5];
-	int s3Port = atoi(argv[6]);
+   // char* s3Ip = argv[5];
+	//int s3Port = atoi(argv[6]);
     //string ips [2];
     //ips[0]=string(s1Ip);
     //ips[1]=string(s2Ip); 
@@ -80,13 +82,14 @@ int main(int argc, char *argv[]){
     while (std::getline(file, str)) {
         //std::cout << str << "\n";
         sp += str;
+        sp += " ";
     }
    
     Solicitud s; 
-    //string sp="cómo                         ";
+    //string sp="hola como estas te quiero contar lo de la peorrata de la otra vez ";
     cout<< sp.length()<<endl;
     int indice=0;
-    int toma= 10;
+    int toma= 19000;
     int auxindi=0;
     string aux="";
 	while(indice< sp.length()) {
@@ -95,29 +98,33 @@ int main(int argc, char *argv[]){
        // cout << "auxindi " <<  auxindi <<endl;
          aux =sp.substr(indice, auxindi);
         indice=indice+auxindi;
-        cout << aux << endl; 
+        //cout << aux << endl; 
     //cout <<"indice " << indice <<endl;
 
-		if(conectado()){
+		//if(conectado()){
             
 			//enviar(s1Ip, s1Port, r, s);
-			thread t (enviar, s1Ip, s1Port, aux, s, 0);
+			thread t1 (enviar, s1Ip, s1Port, aux, s, 0);
            //enviar( s1Ip, s1Port, aux, s);
-			t.detach();
-		}
+		//	t1.detach();
+	//	}
          auxindi =buscaindice(indice , sp, toma);
-       // cout << "auxindi " <<  auxindi <<endl;
+        //cout << "auxindi " <<  auxindi <<endl;
         aux =sp.substr(indice, auxindi);
+            //cout << aux << endl; 
         indice=indice+auxindi;
-        if(conectado() )
-		{
+        //if(conectado() )
+		//{
 			//enviar(s2Ip, s2Port, r, s);
-			thread t(enviar, s2Ip, s2Port, aux, s, 1);
-			t.detach();
-		}
-        auxindi =buscaindice(indice , sp, toma);
+			thread t2(enviar, s2Ip, s2Port, aux, s, 1);
+		//	t2.detach();
+		//}
+        t1.join();
+        t2.join();
+       /* auxindi =buscaindice(indice , sp, toma);
        // cout << "auxindi " <<  auxindi <<endl;
         aux =sp.substr(indice, auxindi);
+          //  cout << aux << endl; 
         indice=indice+auxindi;
          if(conectado() )
 		{
@@ -125,18 +132,26 @@ int main(int argc, char *argv[]){
 			thread t(enviar, s3Ip, s3Port, aux, s, 2);
 			t.detach();
 		}
-	
-		usleep(3500000);
+	*/
+		usleep(200000);
 	
 	}
-    usleep(100000);
+    usleep(200000);
 	//cout << cont << endl;
-	cout <<"la global " << h1ng<<endl;
-    cout <<"la global " << h1n1g<<endl;
-    cout <<"la global " << h2ng<<endl;
-    cout <<"la global " << h2n1g<<endl;
-    cout <<"la global " << h3ng<<endl;
-    cout <<"la global " << h3n1g<<endl;
+	//cout <<"la global " << h1ng<<endl;
+    //cout <<"la global " << h1n1g<<endl;
+    //cout <<"la global " << h2ng<<endl;
+    //cout <<"la global " << h2n1g<<endl;
+    //cout <<"la global " << h3ng<<endl;
+    //cout <<"la global " << h3n1g<<endl;
+    cout<< indice <<endl;
+    cout <<sp.length()<<endl;
+    lli total1=h1ng+h2ng+h3ng;
+    lli total2=h1n1g +h2n1g + h3n1g ;
+    cout<<"existentes  " << total1 <<endl;
+    cout << "total " << total2 <<endl;
+    double  porcen = ((double)total1/(double)total2)*100;
+    cout << "porcentaje " <<  porcen <<endl;
     return 0;
     
 }
