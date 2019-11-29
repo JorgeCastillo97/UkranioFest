@@ -1,54 +1,71 @@
+#include <iostream>
 #include "PaqueteDatagrama.h"
+using namespace std;
 
-PaqueteDatagrama::PaqueteDatagrama(char * cadena, unsigned int tam, char * dir, int port)
-:longitud(tam),puerto(port)
-{
-    datos = new char[tam];
-    memcpy(datos,cadena,tam);
-    strcpy(ip,dir);
+PaqueteDatagrama::PaqueteDatagrama(char * paquete, unsigned int len, char * dir, int port) {
+	
+	if( port >= 5000 )
+		puerto = port;
+	else {
+		cout << "ERROR de asignación de puerto" << endl;
+		exit( 1 );
+	}
+
+	if( len < 1 ) {
+		cout << "ERROR de asignación de longitud" << endl;
+		exit(0);
+	} // end if
+
+	// if( dir == NULL ) {
+	// 	cout << "ERROR de asignación de ip" << endl;
+	// 	exit(0);
+	// } // end if
+	
+	// cout << "longitud: " << len << " dir:" << dir << endl; //" paquete:" << *(int *)paquete << "\n";
+	longitud = len;
+	datos = (char*)malloc(len);
+	// datos = paquete;
+	memcpy( ip, dir, sizeof(char) * 16 );
+	memcpy( datos, paquete, longitud );
+	// ip = dir;
+
 }
 
-PaqueteDatagrama::PaqueteDatagrama(unsigned int tam):longitud(tam)
-{
-    datos = new char[tam];
+PaqueteDatagrama::PaqueteDatagrama(unsigned int len) : longitud(len) {
+	datos = (char *)malloc( len );
 }
 
-PaqueteDatagrama::~PaqueteDatagrama()
-{
-    delete [] datos;
+PaqueteDatagrama::~PaqueteDatagrama() {
+	// free(datos);
 }
 
-char * PaqueteDatagrama::obtieneDireccion()
-{
-    return ip;
-}
 
-unsigned int PaqueteDatagrama::obtieneLongitud()
-{
-    return longitud;
-}
+char * PaqueteDatagrama::obtieneDireccion(void) {
+	return ip;
+} // end obtieneDireccion
 
-int PaqueteDatagrama::obtienePuerto()
-{
-    return puerto;
-}
+unsigned int PaqueteDatagrama::obtieneLongitud(void) {
+	return longitud;
+} // end obtieneLongitud
 
-char * PaqueteDatagrama::obtieneDatos()
-{
-    return datos;
-}
+int PaqueteDatagrama::obtienePuerto(void) {
+	return puerto;
+} // end obtienePuerto
 
-void PaqueteDatagrama::inicializaPuerto(int port)
-{
-    puerto = port;
-}
+char * PaqueteDatagrama::obtieneDatos() {
+	return datos;
+} // end obtieneDatos
 
-void PaqueteDatagrama::inicializaIp(char * dir)
-{
-    strcpy(ip,dir);
-}
+void PaqueteDatagrama::inicializaPuerto(int l) {
+	puerto = l;
+} //end inicializaPuerto
 
-void PaqueteDatagrama::inicializaDatos(char * cadena)
-{
-    memcpy(datos,cadena,longitud);
-}
+
+void PaqueteDatagrama::inicializaIp(char * d) {
+	memcpy( ip, d, sizeof(char) * 16 );
+} //end inicializaIp
+
+
+void PaqueteDatagrama::inicializaDatos(char * d) {
+	datos = d;
+} //end inicializaDatos

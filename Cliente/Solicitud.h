@@ -1,22 +1,13 @@
-#ifndef __Solicitud__
-#define __Solicitud__
-
+#ifndef H_SOLICITUD
+#define H_SOLICITUD
+#include "Mensaje.h"
 #include "SocketDatagrama.h"
-#include "mensaje.h"
-#include <iostream>
-
-using namespace std;
-
-class Solicitud {
-    
+class Solicitud{
 public:
-    Solicitud(struct timeval);
-    char * doOperation(char *IP, int puerto, int operationId, char *arguments);
-    
+	Solicitud();
+	char * doOperation(char *IP, int puerto, int operationId, char *arguments);
 private:
-    SocketDatagrama *socketlocal;
-    unsigned int id = 1;
-	struct timeval timeoutSocket;
+	SocketDatagrama *socketlocal;
 };
 
 #endif

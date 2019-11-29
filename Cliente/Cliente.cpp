@@ -121,11 +121,14 @@ void cliente(char *ip, char *port, char *registros){
 			timeout.tv_usec = 500000;
 			char * hola = (char*)"Hola amikos";
 			// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
-			Solicitud cliente = Solicitud(timeout);
+			Solicitud cliente = Solicitud();
 			cout << "puerto: " << port << " ip:" << ip << endl;
 			msg msgR;
+			msgR.operationId = 1;
+			memcpy( msgR.arguments, hola, strlen(hola) );
 			int  puerto = atoi(port);
-			cliente.doOperation(ip, puerto, 1, hola );
+			cliente.doOperation(ip, 7777, 1, (char*)&msgR );
+			break;
 		} // end if
 	} // end while
 }

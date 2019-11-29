@@ -1,12 +1,17 @@
-Cliente: Cliente.c mongoose.o
-	cc Cliente.c  mongoose.o -o Cliente -g  -W -Wall  -I -Wno-unused-function -DMG_ENABLE_HTTP_STREAMING_MULTIPART -pthread
+servidor: PaqueteDatagrama.o SocketDatagrama.o Respuesta.o servidor.cpp
+	g++ servidor.cpp PaqueteDatagrama.o SocketDatagrama.o Respuesta.o -o servidor 
+
+Respuesta.o: Respuesta.cpp Respuesta.h
+	g++ Respuesta.cpp -c
+
 Solicitud.o: Solicitud.cpp Solicitud.h
 	g++ Solicitud.cpp -c
-SocketDatagrama.o: SocketDatagrama.cpp SocketDatagrama.h
+
+SocketDatagrama.o: PaqueteDatagrama.o SocketDatagrama.cpp
 	g++ SocketDatagrama.cpp -c
-PaqueteDatagrama.o: PaqueteDatagrama.cpp  PaqueteDatagrama.h
-	g++ PaqueteDatagrama.cpp -c
-mongoose.o: mongoose.c mongoose.h
-	cc mongoose.c -c 
+
+PaqueteDatagrama.o: PaqueteDatagrama.h
+	g++ PaqueteDatagrama.cpp -c 
+
 clean:
 	rm -f *.o
