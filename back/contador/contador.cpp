@@ -1,79 +1,99 @@
 #include<bits/stdc++.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <iostream> 
+#include "Respuesta.h"
+#include <thread>  
+#define tamDiccionario 10000
+#define tamFrase 31
 using namespace std;
-typedef pair<string, int> pairDic;
-typedef pair<char, int> pairAbe;
 
-void cargarDiccicionario(map<string, int> &diccionario);        // Cargar archivo de palabras
-void cargarAbecedario(map<unsigned char, int> &abecedario);     // Cargar abecedario
+void cargarDiccicionario(set<string> &diccionario);        // Cargar archivo de palabras
+void cargarAbecedario(set<unsigned char> &abecedario);     // Cargar abecedario
 void convertirAMinuscula(unsigned char &c);                     // Convertir a minuscula
 void convertirAMinusculaAcento(unsigned char &c);               // Convertir a minuscula con acento
-vector<string> obtenerPalabras(map<string, int> &diccionario, map<unsigned char, int> &abecedario, string &frase);
+vector<string> obtenerPalabras(set<string> &diccionario, set<unsigned char> &abecedario, string &frase);
+int contar(set<string> &diccionario, vector<string> &palabras);
 
 int main() {
-    int existen, noExisten;
-	map<string, int> diccionario;
-    map<unsigned char, int> abecedario;
-    vector<string> palabras;
+    int existen, noExisten, nbd;
+	set<string> diccionario;
+    set<unsigned char> abecedario;
 
     cargarDiccicionario(diccionario);    // Inicializar diccionario
     cargarAbecedario(abecedario);        // Inicializar abecedario
     
-    // Recibir palabra
-    string frase = "hola, cómo estas, yo muy bien CÓmo h ";
-    cout << "string size: " << frase.size() << endl;
+    // Recibir solicitud
+    //Respuesta resp(atoi(argv[1]));
+    Respuesta resp(7200);
+    while (true) {
+        struct mensaje *msj = resp.getRequest();
+        if(msj != NULL) {
+            int size = msj->operationId;
+            char datos[1000];
+            memcpy(datos, msj->arguments, sizeof(char)*size);
+            string frase = "";
+            for(int i = 0; i < size; i++) {
+                unsigned char auxChar = datos[i];
+                //printf("char: %d\n", auxChar);
+                frase += auxChar;
+            }
+            cout << "Recibi frase: " << frase << endl;
+            // Obtener palabras
+            vector<string> palabras;
+            palabras = obtenerPalabras(diccionario, abecedario, frase);
 
-    // Obtener palabras
-    palabras = obtenerPalabras(diccionario, abecedario, frase);
+            // Contar palabras que existen en el diccionario
+            existen = contar(diccionario, palabras);
+            noExisten = tamDiccionario - existen;
 
-    // ---------------------------------
-    //       Obtener contadores
-    // ---------------------------------
-    // Verificar si la palabra existe en el diccionario
-    existen = 0; noExisten = 0;
-    for(int i = 0; i < palabras.size(); i++) {
-        cout << palabras[i] << endl;
-        if(diccionario.find(palabras[i]) != diccionario.end())
-           existen++;
-        else 
-            noExisten++;
+            cout << "Existen: " << existen << endl;
+            cout << "No existen: " << noExisten << endl;
+            cout << "Palabras leidas: " << palabras.size() << endl;
+            int palabrasContadas[2];
+            palabrasContadas[0] = existen;
+            palabrasContadas[1] = palabras.size();
+            resp.sendReply((char *) palabrasContadas);
+        }
     }
-    cout << "Existen: " << existen << endl;
-    cout << "No existen: " << noExisten << endl;
+    // Recibir palabra
+    //string frase = "La última pregunta es la más embarazosa, pues la única respuesta que puedo dar es ésta: «Tal vez. Eso lo verá usted leyendo la novela.» ¿Pero y si, después de leerla, el lector no ve en mi héroe nada de particular? Digo esto porque preveo que puede ocurrir así. A mis ojos, el personaje es notable, pero no tengo ninguna confianza en convencer de ello al lector. Es un hombre que procede con seguridad, pero de un modo vago y oscuro. Sin embargo, resultaría sorprendente, en nuestra época, pedir a las personas claridad. De lo que no hay duda es de que es un ser extraño, incluso original. Pero estas características, lejos de conferir el derecho de atraer la atención, representan un perjuicio, especialmente cuando todo el mundo se esfuerza en coordinar las individualidades y extraer un sentido general del absurdo colectivo. El hombre original es, en la mayoría de los casos, un individuo que se aísla de los demás. ¿No es cierto?";
+    //cout << "string size: " << frase.size() << endl;
 }
 
-
-
 // Cargar el archivo de palabras:
-void cargarDiccicionario(map<string, int> &diccionario) {
+void cargarDiccicionario(set<string> &diccionario) {
     std::ifstream file("academia.txt");
-    std::string str;
+    std::string str, aux;
     while (std::getline(file, str)) {
-        //std::cout << str << "\n";
-        diccionario.insert(pairDic(str, 0));
+        stringstream s(str);
+        while(s >> str) {
+            diccionario.insert(str);
+        }
     }
 }
 
 //    Cargar abecedario valido
-void cargarAbecedario(map<unsigned char, int> &abecedario) {
-    abecedario.insert(pairAbe(195, 0));         // Agregar 195 de acentos:
-    abecedario.insert(pairAbe(161, 0));         // Agregar a con acento:
-    abecedario.insert(pairAbe(169, 0));         // Agregar e con acento:
-    abecedario.insert(pairAbe(173, 0));         // Agregar i con acento:
-    abecedario.insert(pairAbe(179, 0));         // Agregar o con acento:
-    abecedario.insert(pairAbe(186, 0));         // Agregar u con acento:
-    abecedario.insert(pairAbe(129, 0));         // Agregar A con acento:
-    abecedario.insert(pairAbe(137, 0));         // Agregar E con acento:
-    abecedario.insert(pairAbe(141, 0));         // Agregar I con acento:
-    abecedario.insert(pairAbe(147, 0));         // Agregar O con acento:
-    abecedario.insert(pairAbe(154, 0));         // Agregar U con acento:
-    abecedario.insert(pairAbe(164, 0));         // Agregar ñ:
-    abecedario.insert(pairAbe(165, 0));         // Agregar Ñ:
-
+void cargarAbecedario(set<unsigned char> &abecedario) {
+    // abecedario.insert(195);         // Agregar 195 de acentos:
+    // abecedario.insert(161);         // Agregar a con acento:
+    // abecedario.insert(169);         // Agregar e con acento:
+    // abecedario.insert(173);         // Agregar i con acento:
+    // abecedario.insert(179);         // Agregar o con acento:
+    // abecedario.insert(186);         // Agregar u con acento:
+    // abecedario.insert(129);         // Agregar A con acento:
+    // abecedario.insert(137);         // Agregar E con acento:
+    // abecedario.insert(141);         // Agregar I con acento:
+    // abecedario.insert(147);         // Agregar O con acento:
+    // abecedario.insert(154);         // Agregar U con acento:
+    // abecedario.insert(164);         // Agregar ñ:
+    // abecedario.insert(165);         // Agregar Ñ:
 
     // Cargar mayusculas y minusculas
     for(int i = 65; i <= 90; i++) {
-        abecedario.insert(pairAbe(i, 0));
-        abecedario.insert(pairAbe(i + 32, 0));
+        abecedario.insert(i);
+        abecedario.insert(i + 32);
     }
 }
 
@@ -88,12 +108,12 @@ void convertirAMinusculaAcento(unsigned char &c) {
 }
 
 // Obtener palabras
-vector<string> obtenerPalabras(map<string, int> &diccionario, map<unsigned char, int> &abecedario, string &frase) {
+vector<string> obtenerPalabras(set<string> &diccionario, set<unsigned char> &abecedario, string &frase) {
     vector<string> palabras;
     string palabra = "";
     for(int i = 0; i < frase.size(); i++) {
         unsigned char c = frase[i]; 
-        printf("char: %c : %d\n", c, c);      
+        //printf("char: %c : %d\n", c, c);      
         // Caracter existe en el abecedario
         if(abecedario.find(c) != abecedario.end()) {
             // Mayusculas
@@ -110,4 +130,14 @@ vector<string> obtenerPalabras(map<string, int> &diccionario, map<unsigned char,
     if(palabra.size() > 0) palabras.push_back(palabra);
 
     return palabras;
+}
+
+// Contar palabras que existen en el diccionario
+int contar(set<string> &diccionario, vector<string> &palabras) {
+    int existen = 0;
+    for(int i = 0; i < palabras.size(); i++) {
+        //cout << palabras[i] << endl;
+        if(diccionario.find(palabras[i]) != diccionario.end()) existen++;
+    }
+    return existen; 
 }
