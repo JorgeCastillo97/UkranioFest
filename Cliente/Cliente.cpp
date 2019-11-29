@@ -1,87 +1,118 @@
+// Copyright (c) 2015 Cesanta Software Limited
+// All rights reserved
+//
+// This example demonstrates how to handle very large requests without keeping
+// them in memory.
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "Solicitud.h"
 #include "mongoose.h"
 #include <iostream>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <thread>
 using namespace std;
+#define TAM_MAX_DATA 4000
 
-void cliente(char *ip, char *port, char *registros);
-void servidorWeb();
-
-static const char *s_http_port = "8081";
+static const char *s_http_port = "8000";
 static struct mg_serve_http_opts s_http_server_opts;
-int banderaDominio = false;
-char * dominio = "192.168.8.";
-int calidad = 100;
+void servidorWeb(void);
 
+// buffer a enviar
+char *buf = (char*)malloc(TAM_MAX_DATA);
+int enviar = 0;
 
-static void handle_size(struct mg_connection *nc, struct http_message *hm) {
-		char query[256];
-		if(banderaDominio){
-			sprintf(query, dominio, (int)strlen(dominio));
-			mg_send_head(nc,200,strlen(query), "Content-Type: text/plain");
-			mg_printf(nc, "%s", query);
-			banderaDominio = false;
+struct file_writer_data {
+  FILE *fp;
+  size_t bytes_written;
+};
+
+static void handle_upload(struct mg_connection *nc, int ev, void *p) {
+  struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
+  struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
+  printf("%d\n", ev);
+  switch (ev) {
+    case MG_EV_HTTP_PART_BEGIN: {
+      if (data == NULL) {
+        data = (struct file_writer_data *)calloc(1, sizeof(struct file_writer_data));
+        data->fp = tmpfile();
+        data->bytes_written = 0;
+
+        if (data->fp == NULL) {
+          mg_printf(nc, "%s",
+                    "HTTP/1.1 500 Failed to open a file\r\n"
+                    "Content-Length: 0\r\n\r\n");
+          nc->flags |= MG_F_SEND_AND_CLOSE;
+          free(data);
+          return;
+        }
+        nc->user_data = (void *) data;
+      }
+      break;
+    }
+    case MG_EV_HTTP_PART_DATA: {
+      if (fwrite(mp->data.p, 1, mp->data.len, data->fp) != mp->data.len) {
+        mg_printf(nc, "%s",
+                  "HTTP/1.1 500 Failed to write to a file\r\n"
+                  "Content-Length: 0\r\n\r\n");
+        nc->flags |= MG_F_SEND_AND_CLOSE;
+        return;
+      }
+      data->bytes_written += mp->data.len;
+      break;
+    }
+    case MG_EV_HTTP_PART_END: {
+      mg_printf(nc,
+                "HTTP/1.1 200 OK\r\n"
+                "Content-Type: text/plain\r\n"
+                "Connection: close\r\n\r\n"
+                "Written %ld of POST data to a temp file\n\n",
+                (long) ftell(data->fp));
+		int c;
+	  	
+	  	fseek(data->fp, 0, SEEK_SET);
+	  	memset( buf, 0, sizeof( TAM_MAX_DATA ) );
+	  	while ((c = fread(buf, 1, TAM_MAX_DATA, data->fp)) > 0) {
+			printf("buf: %s\n", buf);
+			enviar = 1;
 		}
-		else{
-			mg_get_http_var(&hm->body, "query", query, sizeof(query));
-			sprintf(query, "Longitud de la cadena = %d caracteres", (int)strlen(query));
-			printf("Cadena enviada: %s\n", query);
-			mg_send_head(nc,200,strlen(query), "Content-Type: text/plain");
-			mg_printf(nc, "%s", query);
-		}
+      nc->flags |= MG_F_SEND_AND_CLOSE;
+
+      /*Leer el archivo*/
+      fclose(data->fp);
+      free(data);
+      nc->user_data = NULL;
+      break;
+    }
+  }
 }
 
-static void ev_handler(struct mg_connection *nc, int ev, void *p) {
-	char query[256];
- 	struct http_message *hm = (struct http_message *) p;
-
-	if (ev == MG_EV_HTTP_REQUEST) {
-		if (mg_vcmp(&hm->uri, "/search") == 0) {
-
-			mg_get_http_var(&hm->body, "query", query, sizeof(query));
-			printf("Cadena introducida: %s\n",query);
-			calidad = atoi(query);
-		    handle_size(nc, hm);
-
-		}else if (mg_vcmp(&hm->uri, "/dominio") == 0) {
-
-			banderaDominio = true;
-			handle_size(nc, hm);
-
-		}else if (mg_vcmp(&hm->uri, "/actualiza") == 0) {
-
-			s_http_server_opts.document_root = "www";
-
-		}else{
-			mg_serve_http(nc, (struct http_message *) p, s_http_server_opts);
-		}
-	}
-
+static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
+  if (ev == MG_EV_HTTP_REQUEST) {
+    mg_serve_http(nc, (struct http_message*)ev_data, s_http_server_opts);
+  }
 }
 
+int main(void) {
 
-int main(int argc, char*argv[]) {
-	if (argc != 4) {
-		cout << "Ejecución: ./Cliente ipServidor puerto noRegistros" << endl;
-		exit(-1);
-	}
-
-	thread th1(cliente, argv[1], argv[2], argv[3]);
 	thread th2(servidorWeb);
-	th1.join();
+	// th1.join();
 	usleep(3000000);
 	cout << "Servidor web corriendo..." << endl;
 	th2.join();
-	return 0;
+  return 0;
 }
 
+
 void cliente(char *ip, char *port, char *registros){
+
+	while(1) { 
+
+	} // end while
 	struct timeval timeout;
-  timeout.tv_sec = 2;
-  timeout.tv_usec = 500000;
+	timeout.tv_sec = 2;
+	timeout.tv_usec = 500000;
 
 	string auxIp = ip, auxRegistros = registros;
 	char arreglo[100]="";
@@ -97,26 +128,31 @@ void cliente(char *ip, char *port, char *registros){
 
 	// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
 	Solicitud cliente = Solicitud(timeout);
-	cliente.doOperation(ipServer, puerto, operacion, arreglo);
+	cliente.doOperation("10.100.73.101", puerto, operacion, arreglo);
 }
 
-void servidorWeb(){
+
+void servidorWeb(void) {
 	struct mg_mgr mgr;
-	struct mg_connection *nc;
+	struct mg_connection *c;
+
 	mg_mgr_init(&mgr, NULL);
+	c = mg_bind(&mgr, s_http_port, ev_handler);
+	if (c == NULL) {
+	fprintf(stderr, "Cannot start server on port %s\n", s_http_port);
+	exit(EXIT_FAILURE);
+	}
+
+	s_http_server_opts.document_root = ".";  // Serve current directory
+	mg_register_http_endpoint(c, "/upload", handle_upload MG_UD_ARG(NULL));
+
+	// Set up HTTP server parameters
+	mg_set_protocol_http_websocket(c);
 
 	printf("Starting web server on port %s\n", s_http_port);
-	nc = mg_bind(&mgr, s_http_port, ev_handler);
-	if (nc == NULL) {
-		printf("Failed to create listener\n");
-		exit(1);
-	}
-	// Set up HTTP server parameters
-	mg_set_protocol_http_websocket(nc);
-	s_http_server_opts.document_root = "www"; // Serve current directory
-	s_http_server_opts.enable_directory_listing = "yes";
 	for (;;) {
-		mg_mgr_poll(&mgr, 1000);
+	mg_mgr_poll(&mgr, 1000);
 	}
 	mg_mgr_free(&mgr);
-}
+
+} // end servidorWeb

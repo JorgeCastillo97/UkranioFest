@@ -1,62 +1,54 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate"> <!--Indica que debe revalidar cache-->
-    <meta name="generator" content="Jekyll v3.8.5">
-    <title>Proyecto 3. Visualizador remoto de terminales graficas web</title>
-
-
-    <!-- Bootstrap core CSS -->
-		<link href="bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-
-
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AJAX Upload Example</title>
+  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+  <script type="text/javascript">
+    function updateProgress(evt) {
+      if (evt.lengthComputable) {
+        document.getElementById("output").textContent =
+              "Uploaded " + evt.loaded + " of " + evt.total + " bytes";
       }
+    }
+    function uploadFile() {
+      var file_data = new FormData(document.getElementById('filename'));
+      $.ajax({
+        url: "/upload",
+        type: "POST",
+        data: file_data,
+        processData: false,
+        contentType: false,
+        cache: false,
+        xhr: function() {
+          myXhr = $.ajaxSettings.xhr();
+          if(myXhr.upload){
+            myXhr.upload.addEventListener('progress',updateProgress, false); // for handling the progress of the upload
+          }
+          return myXhr;
+        },
+      }).done(function(data) {
+          document.getElementById("output").textContent = "Result: " + data;
+      });
+      return false;
+    }
+  </script>
+</head>
 
-      .center-img {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 70%;
-      }
+<body>
+  <h1>Upload file using standard form upload</h1>
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-    <!-- Custom styles for this template -->
-    <!-- <link href="starter-template.css" rel="stylesheet"> -->
-  </head>
-  <body>
+  <form method="POST" action="/upload" enctype="multipart/form-data">
+    <label>Select a file:</label><br>
+    <input type="file" name="file" />
+    <input type="submit" value="Upload" />
+  </form>
 
-<main role="main" class="container">
-
-	<div class="jumbotron">
-  <h1 class="text-center">Visualizador remoto de terminales graficas web</h1>
-  <p class="lead text-center">A continuación se muestran las terminales remotas activas actualmente</p>
-	</div>
-
-	<div class="container-fluid" id="lista_terminales">
-
-	</div>
-
-  <br><br><br>
-  <br><br><br>
-
-</main><!-- /.container -->
-<script src="jquery-3.4.1.js" charset="utf-8"></script>
-<script src="terminales.js" charset="utf-8"></script>
+  <!-- <h1>Upload file using Ajax - that also gives progress report</h1>
+  <form method="post" id="filename" name="filename" onsubmit="return uploadFile();">
+    <label>Select a file:</label><br>
+    <input type="file" id="file" name="file" required />
+    <input type="submit" value="Upload" />
+  </form> -->
+  <br><br><div id="output"></div>
+</body>
 </html>
