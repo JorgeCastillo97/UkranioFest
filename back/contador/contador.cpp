@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
                 //printf("char: %d\n", auxChar);
                 frase += auxChar;
             }
-            //cout << "Recibi frase: " << frase << endl;
+            cout << "Recibi frase: " << frase.size() << endl;
             // Obtener palabras
             vector<string> palabras;
             palabras = obtenerPalabras(diccionario, abecedario, frase);
