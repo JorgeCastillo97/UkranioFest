@@ -7,7 +7,7 @@
 #include <thread>
 using namespace std;
 
-void cliente(char *ip, char *port, char *registros);
+void cliente(char *ip, char *port, char *stringParam);
 void servidorWeb();
 
 static const char *s_http_port = "8081";
@@ -65,7 +65,7 @@ static void ev_handler(struct mg_connection *nc, int ev, void *p) {
 
 int main(int argc, char*argv[]) {
 	if (argc != 4) {
-		cout << "Ejecución: ./Cliente ipServidor puerto noRegistros" << endl;
+		cout << "Ejecución: ./Cliente ipServidor puerto cadena" << endl;
 		exit(-1);
 	}
 
@@ -78,26 +78,30 @@ int main(int argc, char*argv[]) {
 	return 0;
 }
 
-void cliente(char *ip, char *port, char *registros){
+void cliente(char *ip, char *port, char *stringParam){
 	struct timeval timeout;
   timeout.tv_sec = 2;
   timeout.tv_usec = 500000;
 
-	string auxIp = ip, auxRegistros = registros;
+	string auxIp = ip, auxString = stringParam;
 	char arreglo[100]="";
-	char *ipServer, *reg;
+	char *ipServer, *stringEnvia;
 	int puerto;
 	int operacion = 1;
 	ipServer = const_cast<char *>(auxIp.c_str());
 	puerto = atoi(port);
-	reg = const_cast<char *>(auxRegistros.c_str());
-	cout << ipServer << endl << puerto << endl << reg << endl;
+	stringEnvia = const_cast<char *>(auxString.c_str());
+	cout << ipServer << endl << puerto << endl << stringEnvia << endl;
 
-	memcpy(arreglo, reg, sizeof(strlen(reg) + 1));
+	memcpy(arreglo, stringEnvia, sizeof(strlen(stringEnvia) + 1));
 
 	// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
-	Solicitud cliente = Solicitud(timeout);
-	cliente.doOperation(ipServer, puerto, operacion, arreglo);
+	for (size_t i = 0; i < 3; i++) {
+		Solicitud cliente = Solicitud(timeout);
+		cliente.doOperation(ipServer, puerto, operacion, arreglo);
+	}
+	// Solicitud cliente = Solicitud(timeout);
+	// cliente.doOperation(ipServer, puerto, operacion, arreglo);
 }
 
 void servidorWeb(){

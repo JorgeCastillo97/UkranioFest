@@ -38,7 +38,7 @@ char * Solicitud::doOperation(char* IP, int puerto, int operationId, char* argum
 				PaqueteDatagrama acuse(sizeof(msj));
 				res = socketlocal->recibeTimeout(acuse,timeoutSocket.tv_sec,timeoutSocket.tv_usec);
 				if(res >0 ){
-					resultado = acuse.obtieneDatos();
+					resultado  = acuse.obtieneDatos();
 					cout << "[ Respuesta del servidor: " <<acuse.obtieneDatos() <<" ]" <<endl;
 					break;
 				}
