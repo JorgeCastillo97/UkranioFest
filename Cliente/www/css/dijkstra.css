@@ -1,0 +1,82 @@
+body{ 
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: #000 !important;
+	color: white;
+	font-family: 'Montserrat', sans-serif;
+}
+input, textarea {
+	background: transparent;
+	color: #42ff00;
+	border-color: #42ff00;
+	font-size: 23px;
+	border-radius: 10px;
+	outline: none;
+	text-align:center;
+	font-family: 'Montserrat', sans-serif;
+}
+input{  margin: 10px auto; }
+label{ color: #fff;  }
+.text {
+	margin: 10px auto;
+	text-align:center;
+	color: #fff;
+}
+.panel{
+	width: 100%;
+}
+.json, .opciones {
+	width: 40%;
+	float: right;
+	display: inline-block;
+	text-align: center;
+}
+
+.enlace {
+	display: none;
+}
+
+#showContent {
+	color: #42ff00 !important;
+}
+
+.nodoNombre {
+	font-size: 45px;
+	color: #fff;
+}
+.tutorial {
+	text-align: center;
+}
+
+.optimo, .distancia {
+	color: #cbcbcb;
+	font-size: 20px;
+}
+.no-optimo {
+	color: #9f9f9f;
+	font-size: 20px;
+}
+
+.content {
+  width: 54%;
+  height: 50%;
+  overflow: auto;
+  display: inline-block;
+}
+
+canvas {
+  display: inline-block;
+  height: 900px;
+}
+
+.T {
+	width: 45%;
+	text-align: center;
+	display: inline-block;
+	float: right;
+}
+
+.appear, .appearVal {
+	display:none;
+}
