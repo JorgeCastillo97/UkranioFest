@@ -2,6 +2,7 @@
 #define __Solicitud__
 
 #include "SocketDatagrama.h"
+#include "mensaje.h"
 #include <iostream>
 
 using namespace std;

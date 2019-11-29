@@ -1,5 +1,5 @@
 SOURCES = $(PROG).cpp mongoose.c  SocketDatagrama.cpp PaqueteDatagrama.cpp PaqueteDatagrama.h Solicitud.cpp Solicitud.h
-CFLAGS = -g  -W -Wall -Wno-unused-function $(CFLAGS_EXTRA) $(MODULE_CFLAGS)
+CFLAGS = -g  -Wall -Wno-unused-function $(CFLAGS_EXTRA) $(MODULE_CFLAGS)
 CC = g++
 all: $(PROG)
 
@@ -8,7 +8,7 @@ ifeq ($(OS), Windows_NT)
 CFLAGS += -lws2_32
 CC = gcc
 else
-CFLAGS += -pthread
+CFLAGS += -pthread -lpthread 
 endif
 
 ifeq ($(SSL_LIB),openssl)

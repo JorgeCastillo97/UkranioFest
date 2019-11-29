@@ -18,6 +18,7 @@ using namespace std;
 static const char *s_http_port = "8000";
 static struct mg_serve_http_opts s_http_server_opts;
 void servidorWeb(void);
+void cliente(char *ip, char *port, char *registros);
 
 // buffer a enviar
 char *buf = (char*)malloc(TAM_MAX_DATA);
@@ -94,10 +95,14 @@ static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
   }
 }
 
-int main(void) {
+int main(int argc, char * argv[]) {
 
+	// thread th1(cliente, (char *)"127.0.0.1", 7777, "20");
+
+	thread th1(cliente, argv[1], argv[2], argv[3]);
+	enviar = 1;
 	thread th2(servidorWeb);
-	// th1.join();
+	th1.join();
 	usleep(3000000);
 	cout << "Servidor web corriendo..." << endl;
 	th2.join();
@@ -107,28 +112,21 @@ int main(void) {
 
 void cliente(char *ip, char *port, char *registros){
 
+
+
 	while(1) { 
-
+		if( enviar ) {
+			struct timeval timeout;
+			timeout.tv_sec = 2;
+			timeout.tv_usec = 500000;
+			char * hola = (char*)"Hola amikos";
+			// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
+			Solicitud cliente = Solicitud(timeout);
+			cout << "puerto: " << port << " ip:" << ip << endl;
+			msg msgR;
+			memcpy( &msgR, cliente.doOperation(ip, 7777, 1, hola ), sizeof(msg) );
+		} // end if
 	} // end while
-	struct timeval timeout;
-	timeout.tv_sec = 2;
-	timeout.tv_usec = 500000;
-
-	string auxIp = ip, auxRegistros = registros;
-	char arreglo[100]="";
-	char *ipServer, *reg;
-	int puerto;
-	int operacion = 1;
-	ipServer = const_cast<char *>(auxIp.c_str());
-	puerto = atoi(port);
-	reg = const_cast<char *>(auxRegistros.c_str());
-	cout << ipServer << endl << puerto << endl << reg << endl;
-
-	memcpy(arreglo, reg, sizeof(strlen(reg) + 1));
-
-	// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
-	Solicitud cliente = Solicitud(timeout);
-	cliente.doOperation("10.100.73.101", puerto, operacion, arreglo);
 }
 
 
