@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
                 //printf("char: %d\n", auxChar);
                 frase += auxChar;
             }
-            cout << "Recibi frase: " << frase << endl;
+            //cout << "Recibi frase: " << frase << endl;
             // Obtener palabras
             vector<string> palabras;
             palabras = obtenerPalabras(diccionario, abecedario, frase);
@@ -48,9 +48,9 @@ int main(int argc, char *argv[]) {
             existen = contar(diccionario, palabras);
             noExisten = tamDiccionario - existen;
 
-            cout << "Existen: " << existen << endl;
-            cout << "No existen: " << noExisten << endl;
-            cout << "Palabras leidas: " << palabras.size() << endl;
+            // cout << "Existen: " << existen << endl;
+            // cout << "No existen: " << noExisten << endl;
+            // cout << "Palabras leidas: " << palabras.size() << endl;
             int palabrasContadas[2];
             palabrasContadas[0] = existen;
             palabrasContadas[1] = palabras.size();
