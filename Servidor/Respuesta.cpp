@@ -9,10 +9,10 @@ Respuesta::Respuesta(int pl, struct timeval timeout) {
 
 struct mensaje* Respuesta::getRequest() {
 
-	PaqueteDatagrama paq(sizeof(mensaje));
+	PaqueteDatagrama paq(sizeof(msg));
 	//socketlocal->recibe(paq);
 	socketlocal->recibeTimeout(paq,timeoutSocket.tv_sec,timeoutSocket.tv_usec);
-	palabras = (struct mensaje*) paq.obtieneDatos();
+	palabras = (msg*) paq.obtieneDatos();
 	cout << "El id es: " <<  palabras->operationId << endl;
 	cout << "Los argumentos son: " <<  palabras->arguments << endl;
 	cout << "La IP: " << palabras->IP << endl;

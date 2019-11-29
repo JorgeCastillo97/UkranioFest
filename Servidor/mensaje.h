@@ -12,4 +12,5 @@ struct mensaje {
     char arguments[TAM_MAX_DATA];
 };
 
+typedef struct mensaje msg;
 #endif

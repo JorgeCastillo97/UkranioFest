@@ -124,7 +124,8 @@ void cliente(char *ip, char *port, char *registros){
 			Solicitud cliente = Solicitud(timeout);
 			cout << "puerto: " << port << " ip:" << ip << endl;
 			msg msgR;
-			memcpy( &msgR, cliente.doOperation(ip, 7777, 1, hola ), sizeof(msg) );
+			int  puerto = atoi(port);
+			cliente.doOperation(ip, puerto, 1, hola );
 		} // end if
 	} // end while
 }

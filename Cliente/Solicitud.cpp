@@ -28,5 +28,5 @@ char * Solicitud::doOperation(char* IP, int puerto, int operationId, char* argum
 		cout << "El servidor no está disponible " << endl;
 		exit(1);
 	}	//end if
-   	return p2.obtieneDatos();
+   	return "JAJAJA";
 }
