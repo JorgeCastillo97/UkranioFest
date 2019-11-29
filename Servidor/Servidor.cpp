@@ -26,23 +26,21 @@ int main(int argc, char const *argv[]) {
 
 
 	while(1) {
-	struct mensaje msj;
-  struct mensaje m1;
-  f = fopen(argv[2], "a+");
-  if (f == NULL) {
-    cout << "Error al abrir el archivo (SERVIDOR)" << endl;
-  }
+		struct mensaje msj;
+		struct mensaje m1;
+		if (f == NULL) {
+			cout << "Error al abrir el archivo (SERVIDOR)" << endl;
+		}
 
-	cout << "\nEsperando conexion : " << endl;
-	cout << "Se espera recibir id mensaje: " << idEsperado << endl;
-	memcpy(&msj, respuesta.getRequest(), sizeof(struct mensaje));
-    //cout << "Estos son los argumentos antes de la operacion: " << msj.arguments << endl;
-		//cout << "id: " << msj.operationId << endl;
-		//cout<< "IP: " <<msj.IP<<endl;
+		cout << "\nEsperando conexion : " << endl;
+		cout << "Se espera recibir id mensaje: " << idEsperado << endl;
+		memcpy(&msj, respuesta.getRequest(), sizeof(struct mensaje));
+		
 		FILE *fp;
-		fp = fopen("file.txt", "w+");
+		fp = fopen("file.txt", "a");
    		/* Write data to the file */
-		fwrite(c, strlen(c) + 1, 1, fp);
+		fwrite(msj.arguments, strlen(msj.arguments), 1, fp);
+		fclose( fp );
 	}
 	return 0;
 }

@@ -88,12 +88,19 @@ static void handle_upload(struct mg_connection *nc, int ev, void *p) {
 
 		int c;
 	  	fseek(data->fp, 0, SEEK_SET);
-	  	memset( buf, 0, sizeof( TAM_MAX_DATA ) );
-	  	for( int i = 0; i < numPartes; i++ )
-		  	while ((c = fread(buf, 1, chunksize, data->fp)) > 0) {
-				printf("buf: %s\n", buf);
-				enviar = 1;
-			}
+	  	int chunks = 0;
+	  	for( int i = 0; i < numPartes; i++ ) {
+	  		memset( buf, 0, sizeof( TAM_MAX_DATA ) );
+
+			c = fread(buf, 1, chunksize, data->fp);
+			if( c <= 0 )
+				break;
+			// printf("buf: %s\n", buf);
+			enviar = 1;
+			chunks += chunksize;
+			cout << "Parte: " << i+1 << " tam: " << chunks <<  endl;
+
+	  	} // end for
 
 
       nc->flags |= MG_F_SEND_AND_CLOSE;
@@ -128,13 +135,15 @@ int main( int argc, char * argv[] ) {
 void cliente(char *ip, char *port, char *registros){
 
 	while(1) {
-		struct timeval timeout;
-		timeout.tv_sec = 2;
-		timeout.tv_usec = 500000;
-		// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
-		Solicitud cliente = Solicitud(timeout);
-		cliente.doOperation(ip, atoi(port), 1, buf);
-		enviar = 0;
+		if( enviar ) {
+			struct timeval timeout;
+			timeout.tv_sec = 2;
+			timeout.tv_usec = 500000;
+			// arreglo contiene el numero de registros que serán leidos para ser enviados al servidor
+			Solicitud cliente = Solicitud(timeout);
+			cliente.doOperation(ip, atoi(port), 1, buf);
+			enviar = 0;
+		} // end enviar
 	} // end while
 }
 
@@ -146,8 +155,8 @@ void servidorWeb(void) {
 	mg_mgr_init(&mgr, NULL);
 	c = mg_bind(&mgr, s_http_port, ev_handler);
 	if (c == NULL) {
-	fprintf(stderr, "Cannot start server on port %s\n", s_http_port);
-	exit(EXIT_FAILURE);
+		fprintf(stderr, "Cannot start server on port %s\n", s_http_port);
+		exit(EXIT_FAILURE);
 	}
 
 	s_http_server_opts.document_root = "www";  // Serve current directory

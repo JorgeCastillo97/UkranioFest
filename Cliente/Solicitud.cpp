@@ -21,7 +21,7 @@ char * Solicitud::doOperation(char* IP, int puerto, int operationId, char* argum
 	PaqueteDatagrama paq((char*) &msj, sizeof(msj), IP, puerto);
 	socketlocal->envia(paq);
 	PaqueteDatagrama paq1(sizeof(msj));
-	int res = socketlocal->recibeTimeout(paq1,timeoutSocket.tv_sec,timeoutSocket.tv_usec);
+	// int res = socketlocal->recibeTimeout(paq1,timeoutSocket.tv_sec,timeoutSocket.tv_usec);
 
 
 
