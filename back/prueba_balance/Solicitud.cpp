@@ -16,7 +16,8 @@ char *Solicitud::doOperation(char *IP, int puerto, int operationId, char *argume
 	printf("\nContRequest: %u\n", contRequest);
 	sms.operationId = operationId;
 	string auxca= string(arguments);
-	memcpy(sms.arguments, arguments, sizeof(auxca));
+	//cout<<"el debugeador " <<auxca.length()<<endl; 
+	memcpy(sms.arguments, arguments, sizeof(char)*auxca.length());
 	PaqueteDatagrama p = PaqueteDatagrama((char *)&sms, sizeof(sms), IP, puerto);
 	//cout << "Direccion: " << p.obtieneDireccion() << endl;
 	//cout << "Puerto: " << p.obtienePuerto() << endl;
@@ -27,8 +28,7 @@ char *Solicitud::doOperation(char *IP, int puerto, int operationId, char *argume
 	while (tam == -1 && n < 7) {
 		socketlocal->envia(p);
 		tam = socketlocal->recibeTimeout(p1, 2, 500);
-		n++;
-	}
+			}
 	if (n == 7) {
 		cout << "Servidor no esta disponible, intente mas tarde." << endl;
 		int error[2];
@@ -38,7 +38,7 @@ char *Solicitud::doOperation(char *IP, int puerto, int operationId, char *argume
 	}
 	else
 	{
-		cout << "Mensaje recibido" << endl;
+		//cout << "Mensaje recibido" << endl;
 		//cout << "Direccion: " << p1.obtieneDireccion() << endl;
 		//cout << "Puerto: " << p1.obtienePuerto() << endl;
 		struct mensaje *msj = (struct mensaje *)p1.obtieneDatos();

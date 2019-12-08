@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>AJAX Upload Example</title>
+  <link rel="stylesheet" href="./css/loader.min.css">
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
   <script type="text/javascript">
     function updateProgress(evt) {
@@ -34,14 +35,27 @@
   </script>
 </head>
 
-<body>
-  <h1>Upload file using standard form upload</h1>
+<body style="background:#000; color: #fff">
 
-  <form method="POST" action="/upload" enctype="multipart/form-data">
-    <label>Select a file:</label><br>
-    <input type="file" name="file" />
-    <input type="submit" value="Upload" />
-  </form>
+  <div id="loader-wrapper">
+    <div class="all">
+      <div class="spinLoad circulo contentLoad" id="spinLoad">
+        <img src="./img/escom.png">
+      </div>
+    </div>
+    <div class="loader-section section-left"></div>
+    <div class="loader-section section-right"></div>
+  </div>
+  <div style="text-align: center;">
+    <h1 style="font-size: 72px">Probabilidad de que entiendas el libro:</h1>
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+      <label style="font-size: 25px">Elige un archivo:</label><br><br>
+      <input type="file" name="file" style="font-size: 30px" />
+      <input type="submit" value="Upload" style="font-size: 30px"/>
+    </form>
+
+  </div>
+
 
   <!-- <h1>Upload file using Ajax - that also gives progress report</h1>
   <form method="post" id="filename" name="filename" onsubmit="return uploadFile();">
@@ -50,5 +64,14 @@
     <input type="submit" value="Upload" />
   </form> -->
   <br><br><div id="output"></div>
+  <script type="text/javascript">
+    /*Efecto al cargar*/
+    window.addEventListener( 'load', function(){
+      document.getElementById("spinLoad").className += ' animar';
+      setTimeout( function(){
+        $("body").addClass( 'loaded' );
+      }, 1200 );
+    } );
+  </script>
 </body>
 </html>

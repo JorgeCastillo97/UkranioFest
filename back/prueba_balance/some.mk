@@ -1,4 +1,4 @@
-SOURCES = $(PROG).cpp mongoose.c  SocketDatagrama.cpp PaqueteDatagrama.cpp PaqueteDatagrama.h Solicitud.cpp Solicitud.h
+SOURCES = $(PROG).cpp mongoose.c  Solicitud.cpp SocketDatagrama.cpp PaqueteDatagrama.cpp
 CFLAGS = -g -Wall -Wno-unused-function $(CFLAGS_EXTRA) $(MODULE_CFLAGS)
 CC = g++
 all: $(PROG)
